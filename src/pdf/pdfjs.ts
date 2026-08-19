@@ -1,5 +1,6 @@
-import { activeDocument, activeWindow, loadPdfJs } from "obsidian";
+import { loadPdfJs } from "obsidian";
 import type { CancellationToken, PasswordProvider } from "../types";
+import { getActiveWindow } from "./dom";
 
 export interface PdfViewport {
   width: number;
@@ -80,7 +81,7 @@ export function throwIfCancelled(token: CancellationToken): void {
 }
 
 export async function yieldToInterface(): Promise<void> {
-  const timerWindow = activeDocument.defaultView ?? activeWindow;
+  const timerWindow = getActiveWindow();
   await new Promise<void>((resolve) => {
     if (typeof timerWindow.requestAnimationFrame === "function") {
       timerWindow.requestAnimationFrame(() => resolve());

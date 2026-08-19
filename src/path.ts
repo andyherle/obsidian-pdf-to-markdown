@@ -25,7 +25,8 @@ function cleanFileName(value: string): string {
   return value
     .normalize("NFC")
     .replace(/[\\/:*?"<>|#[\]]/g, " ")
-    .replace(/[\u0000-\u001f\u007f\u202a-\u202e\u2066-\u2069]/g, " ")
+    .replace(/\p{Cc}/gu, " ")
+    .replace(/[\u202a-\u202e\u2066-\u2069]/gu, " ")
     .replace(/\s+/g, " ")
     .trim()
     .replace(/\s+\./g, ".")

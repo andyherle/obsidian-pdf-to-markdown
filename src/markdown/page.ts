@@ -61,7 +61,9 @@ function joinParagraphText(previous: string, next: string): string {
   if (!next) return previous;
   if (/\p{L}-$/u.test(previous) && /^\p{Ll}/u.test(next)) return `${previous.slice(0, -1)}${next}`;
   if (CJK_END.test(previous) && CJK_START.test(next)) return `${previous}${next}`;
-  if (/[(\[{/]$/.test(previous) || /^[,.;:!?%)]/.test(next)) return `${previous}${next}`;
+  if (["(", "[", "{", "/"].includes(previous.slice(-1)) || /^[,.;:!?%)]/.test(next)) {
+    return `${previous}${next}`;
+  }
   return `${previous} ${next}`;
 }
 

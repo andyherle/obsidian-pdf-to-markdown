@@ -32,8 +32,11 @@ module.exports = { Plugin, PluginSettingTab, Modal, FuzzySuggestModal, TAbstract
 copyFileSync(join(root, "main.js"), join(temp, "main.cjs"));
 try {
   const require = createRequire(import.meta.url);
-  const plugin = require(join(temp, "main.cjs"));
-  if (typeof plugin !== "function") throw new Error("main.js does not export an Obsidian plugin class.");
+  const loaded = require(join(temp, "main.cjs"));
+  const plugin = typeof loaded === "function" ? loaded : loaded?.default;
+  if (typeof plugin !== "function") {
+    throw new Error("main.js does not export an Obsidian plugin class.");
+  }
   console.log(`Bundle smoke test passed: ${plugin.name || "plugin class"}.`);
 } finally {
   rmSync(temp, { recursive: true, force: true });

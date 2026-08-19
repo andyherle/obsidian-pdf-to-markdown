@@ -1,12 +1,13 @@
-import { activeWindow } from "obsidian";
 import type { CancellationToken, ExtractedAsset, PdfToMarkdownSettings } from "../types";
 import type { PdfJsLibrary, PdfObjectStore, PdfPageProxy } from "./pdfjs";
+import { getActiveWindow } from "./dom";
 import { imageToCanvas } from "./image-decode";
 import { encodeCanvas, hashBytes, type EncodedCanvas } from "./image-encode";
 import { IDENTITY, imageBounds, multiply, transformFromArgs, type Matrix } from "./image-geometry";
 import { throwIfCancelled, yieldToInterface } from "./pdfjs";
 
 export { hashBytes } from "./image-encode";
+export { renderPageSnapshot } from "./page-snapshot";
 
 function objectStoreHasValue(store: PdfObjectStore, id: string): boolean {
   if (typeof store.has !== "function") return false;
@@ -26,6 +27,7 @@ function getPdfObject(
   if (available.length === 0) return Promise.resolve(null);
   const resolved = available.filter((store) => objectStoreHasValue(store, id));
   const candidates = resolved.length > 0 ? resolved : available;
+  const activeWindow = getActiveWindow();
 
   return new Promise((resolve) => {
     let settled = false;
@@ -59,6 +61,11 @@ function getPdfObject(
       }
     }
   });
+}
+
+function pdfObjectId(value: unknown): string {
+  if (typeof value === "string" || typeof value === "number") return String(value);
+  return "";
 }
 
 export async function extractPageImages(
@@ -106,7 +113,8 @@ export async function extractPageImages(
     if (!imageOps.has(operation)) continue;
 
     const inline = operation === ops.paintInlineImageXObject;
-    const objectId = inline ? `inline-${index}` : String(args[0] ?? "");
+    const objectId = inline ? `inline-${index}` : pdfObjectId(args[0]);
+    if (!inline && !objectId) continue;
     const placementKey = `${objectId}:${matrix.map((value) => Math.round(value * 10) / 10).join(",")}`;
     if (seenPlacements.has(placementKey)) continue;
     seenPlacements.add(placementKey);

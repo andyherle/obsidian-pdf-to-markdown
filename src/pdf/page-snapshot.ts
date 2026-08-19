@@ -1,7 +1,7 @@
-import { activeDocument, activeWindow } from "obsidian";
 import type { CancellationToken, ExtractedAsset, PdfToMarkdownSettings } from "../types";
 import type { PdfPageProxy } from "./pdfjs";
 import { fitImageDimensions, MAX_CANVAS_PIXELS } from "./dimensions";
+import { getActiveWindow } from "./dom";
 import { createCanvas } from "./image-canvas";
 import { encodeCanvas, hashBytes } from "./image-encode";
 import { throwIfCancelled } from "./pdfjs";
@@ -29,7 +29,7 @@ export async function renderPageSnapshot(
     intent: "display",
     background: "#ffffff"
   });
-  const renderWindow = activeDocument.defaultView ?? activeWindow;
+  const renderWindow = getActiveWindow();
   const cancellationPoll = renderWindow.setInterval(() => {
     if (token.cancelled) renderTask.cancel?.();
   }, 50);

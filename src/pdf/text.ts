@@ -74,7 +74,7 @@ function toSpan(
   pageHeight: number,
   viewportTransform?: number[]
 ): PdfTextSpan | null {
-  const text = item.str?.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, "") ?? "";
+  const text = item.str?.replace(/\p{Cc}/gu, "") ?? "";
   if (!text.trim()) return null;
   const rawTransform = item.transform;
   if (!rawTransform || rawTransform.length < 6) return null;

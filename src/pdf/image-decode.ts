@@ -1,8 +1,8 @@
-import { activeDocument } from "obsidian";
 import type { PdfJsLibrary } from "./pdfjs";
 import { fitImageDimensions, MAX_CANVAS_PIXELS } from "./dimensions";
 import { classifyRawPixels, sampleCoordinate } from "./pixels";
 import { createCanvas } from "./image-canvas";
+import { getActiveDocument } from "./dom";
 
 interface RawPdfImage {
   data?: ArrayLike<number> | ArrayBuffer;
@@ -86,7 +86,7 @@ function makeImageData(
     }
   }
 
-  const ImageDataConstructor = activeDocument.defaultView?.ImageData;
+  const ImageDataConstructor = getActiveDocument().defaultView?.ImageData;
   if (!ImageDataConstructor) return null;
   return {
     imageData: new ImageDataConstructor(rgba, fitted.width, fitted.height),

@@ -35,7 +35,7 @@ function isInFrontmatter(position: CachePosition, frontmatter?: CachePosition): 
 }
 
 function candidateSourcePaths(app: App, source: TFile): string[] {
-  const resolvedLinks = (app.metadataCache.resolvedLinks ?? {}) as Record<string, Record<string, number>>;
+  const resolvedLinks = app.metadataCache.resolvedLinks;
   return Object.entries(resolvedLinks)
     .filter(([, destinations]) => (destinations[source.path] ?? 0) > 0)
     .map(([path]) => path);
