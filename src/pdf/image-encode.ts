@@ -1,6 +1,6 @@
-import { activeWindow } from "obsidian";
 import type { ImageFormat } from "../types";
 import { fitImageDimensions, MAX_CANVAS_PIXELS } from "./dimensions";
+import { getActiveWindow } from "./dom";
 import { createCanvas } from "./image-canvas";
 
 export interface EncodedCanvas {
@@ -17,7 +17,7 @@ function dataUrlToBlob(value: string): Blob | null {
   if (!match) return null;
   const mime = match[1] || "application/octet-stream";
   try {
-    const binary = activeWindow.atob(match[2]);
+    const binary = getActiveWindow().atob(match[2]);
     const bytes = new Uint8Array(binary.length);
     for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
     return new Blob([bytes], { type: mime });
@@ -126,7 +126,7 @@ export async function encodeCanvas(
 
 export async function hashBytes(bytes: ArrayBuffer): Promise<string> {
   try {
-    const digest = await activeWindow.crypto.subtle.digest("SHA-256", bytes);
+    const digest = await getActiveWindow().crypto.subtle.digest("SHA-256", bytes);
     return [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, "0")).join("");
   } catch {
     let fnv = 2166136261;
