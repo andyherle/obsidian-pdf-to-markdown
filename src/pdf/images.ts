@@ -63,6 +63,11 @@ function getPdfObject(
   });
 }
 
+function pdfObjectId(value: unknown): string {
+  if (typeof value === "string" || typeof value === "number") return String(value);
+  return "";
+}
+
 export async function extractPageImages(
   pdfjs: PdfJsLibrary,
   page: PdfPageProxy,
@@ -108,7 +113,8 @@ export async function extractPageImages(
     if (!imageOps.has(operation)) continue;
 
     const inline = operation === ops.paintInlineImageXObject;
-    const objectId = inline ? `inline-${index}` : String(args[0] ?? "");
+    const objectId = inline ? `inline-${index}` : pdfObjectId(args[0]);
+    if (!inline && !objectId) continue;
     const placementKey = `${objectId}:${matrix.map((value) => Math.round(value * 10) / 10).join(",")}`;
     if (seenPlacements.has(placementKey)) continue;
     seenPlacements.add(placementKey);
