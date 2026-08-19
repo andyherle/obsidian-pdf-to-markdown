@@ -7,6 +7,7 @@ import { IDENTITY, imageBounds, multiply, transformFromArgs, type Matrix } from 
 import { throwIfCancelled, yieldToInterface } from "./pdfjs";
 
 export { hashBytes } from "./image-encode";
+export { renderPageSnapshot } from "./page-snapshot";
 
 function objectStoreHasValue(store: PdfObjectStore, id: string): boolean {
   if (typeof store.has !== "function") return false;
