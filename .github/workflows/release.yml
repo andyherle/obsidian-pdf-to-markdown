@@ -53,6 +53,8 @@ jobs:
         id: release-version
         shell: bash
         env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           REQUESTED_VERSION: ${{ inputs.version }}
           FORCE_RELEASE: ${{ inputs.force }}
         run: |
@@ -75,16 +77,33 @@ jobs:
 
           git fetch --tags --force
 
-          SHOULD_RELEASE=true
+          TAG_EXISTS=false
           if git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
-            if [ "$FORCE_RELEASE" != "true" ]; then
-              echo "Tag $VERSION already exists. Nothing to publish."
-              SHOULD_RELEASE=false
-            fi
+            TAG_EXISTS=true
+          fi
+
+          RELEASE_EXISTS=false
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            RELEASE_EXISTS=true
+          fi
+
+          SHOULD_RELEASE=true
+          if [ "$TAG_EXISTS" = "true" ] && [ "$RELEASE_EXISTS" = "true" ] && [ "$FORCE_RELEASE" != "true" ]; then
+            echo "Release $VERSION already exists. Nothing to publish."
+            SHOULD_RELEASE=false
           fi
 
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag_exists=$TAG_EXISTS" >> "$GITHUB_OUTPUT"
+          echo "release_exists=$RELEASE_EXISTS" >> "$GITHUB_OUTPUT"
           echo "should_release=$SHOULD_RELEASE" >> "$GITHUB_OUTPUT"
+
+      - name: Check out existing release tag
+        if: steps.release-version.outputs.should_release == 'true' && steps.release-version.outputs.tag_exists == 'true'
+        shell: bash
+        env:
+          VERSION: ${{ steps.release-version.outputs.version }}
+        run: git checkout --detach "$VERSION"
 
       - name: Install dependencies
         if: steps.release-version.outputs.should_release == 'true'
@@ -99,16 +118,11 @@ jobs:
         shell: bash
         env:
           VERSION: ${{ steps.release-version.outputs.version }}
-          FORCE_RELEASE: ${{ inputs.force }}
+          TAG_EXISTS: ${{ steps.release-version.outputs.tag_exists }}
         run: |
-          if git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
+          if [ "$TAG_EXISTS" = "true" ]; then
             TAG_SHA="$(git rev-list -n 1 "$VERSION")"
-            if [ "$FORCE_RELEASE" = "true" ]; then
-              echo "Reusing existing tag $VERSION at $TAG_SHA"
-            else
-              echo "Tag $VERSION already exists"
-              exit 1
-            fi
+            echo "Reusing existing tag $VERSION at $TAG_SHA"
           else
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -121,6 +135,7 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           VERSION: ${{ steps.release-version.outputs.version }}
         run: |
           if gh release view "$VERSION" >/dev/null 2>&1; then
