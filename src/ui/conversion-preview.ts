@@ -74,7 +74,8 @@ export class ConversionPreviewRenderer {
       const asset = byId.get(assetId);
       const url = this.assetUrls.get(assetId);
       if (!asset || !url) return `> [!warning] Missing preview asset: ${assetId}`;
-      return `![${asset.alt.replace(/[\[\]]/g, "")}](${url})`;
+      const alt = asset.alt.replaceAll("[", "").replaceAll("]", "");
+      return `![${alt}](${url})`;
     });
   }
 
