@@ -1,0 +1,236 @@
+.pdfmd-modal {
+  width: min(1100px, 92vw);
+}
+
+.pdfmd-modal .modal-content {
+  padding-bottom: 0;
+}
+
+.pdfmd-muted {
+  color: var(--text-muted);
+}
+
+.pdfmd-loading {
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.pdfmd-loading progress {
+  width: min(480px, 100%);
+}
+
+.pdfmd-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--background-modifier-border);
+  border-top-color: var(--interactive-accent);
+  border-radius: 50%;
+  animation: pdfmd-spin 0.8s linear infinite;
+}
+
+@keyframes pdfmd-spin {
+  to { transform: rotate(360deg); }
+}
+
+.pdfmd-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.pdfmd-metric {
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  background: var(--background-secondary);
+}
+
+.pdfmd-metric strong,
+.pdfmd-metric span {
+  display: block;
+}
+
+.pdfmd-metric strong {
+  font-size: 1.05em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pdfmd-metric span {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  margin-top: 2px;
+}
+
+.pdfmd-controls {
+  border-top: 1px solid var(--background-modifier-border);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.pdfmd-targets {
+  display: grid;
+  gap: 6px;
+  margin: 14px 0;
+  padding: 12px;
+  border-radius: var(--radius-s);
+  background: var(--background-secondary);
+}
+
+.pdfmd-target-row {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.pdfmd-target-row > span {
+  color: var(--text-muted);
+}
+
+.pdfmd-target-row code {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.pdfmd-warnings {
+  margin: 12px 0;
+  padding: 10px 12px;
+  border: 1px solid var(--background-modifier-warning);
+  border-radius: var(--radius-s);
+}
+
+.pdfmd-warnings summary {
+  cursor: pointer;
+  font-weight: var(--font-semibold);
+}
+
+.pdfmd-warnings ul {
+  margin-bottom: 0;
+}
+
+.pdfmd-preview {
+  margin-top: 14px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+}
+
+.pdfmd-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 6px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  background: var(--background-secondary);
+}
+
+.pdfmd-tabs button {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.pdfmd-tabs button.is-active {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.pdfmd-preview-pane {
+  height: min(52vh, 620px);
+  min-height: 340px;
+  overflow: auto;
+  padding: 18px;
+}
+
+.pdfmd-pdf-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.pdfmd-pdf-frame {
+  width: 100%;
+  height: calc(100% - 42px);
+  border: 0;
+  border-radius: var(--radius-s);
+  background: white;
+}
+
+.pdfmd-source {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: var(--font-smaller);
+}
+
+.pdfmd-rendered img {
+  max-width: min(100%, 900px);
+  height: auto;
+}
+
+.pdfmd-file-list {
+  padding-left: 20px;
+}
+
+.pdfmd-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px 0;
+  background: var(--background-primary);
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.pdfmd-error,
+.pdfmd-error-panel {
+  color: var(--text-error);
+}
+
+.pdfmd-error-panel {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.pdfmd-error-panel .pdfmd-actions {
+  position: static;
+  justify-content: flex-start;
+}
+
+@media (max-width: 700px) {
+  .pdfmd-modal {
+    width: 96vw;
+  }
+
+  .pdfmd-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pdfmd-target-row {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .pdfmd-preview-pane {
+    min-height: 300px;
+    height: 48vh;
+    padding: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pdfmd-spinner {
+    animation: none;
+  }
+}

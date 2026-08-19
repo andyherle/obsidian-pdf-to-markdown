@@ -1,0 +1,54 @@
+{
+  "name": "obsidian-pdf-to-markdown",
+  "version": "0.2.0",
+  "description": "PDF to Markdown Native converts Vault PDFs to local Markdown with compressed images and compact SVG table output.",
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+    "build:local": "node scripts/build-local.mjs",
+    "build:tests": "node scripts/build-tests.mjs",
+    "test": "npm run build:tests && node --test tests/*.test.mjs",
+    "lint": "eslint .",
+    "check": "tsc -noEmit -skipLibCheck",
+    "version": "node scripts/version-bump.mjs && git add manifest.json versions.json",
+    "validate": "npm run check && npm test && npm run lint && npm run build && node scripts/validate-release.mjs && npm run smoke:bundle",
+    "smoke:bundle": "node scripts/smoke-bundle.mjs",
+    "stage:release": "npm run build && node scripts/validate-release.mjs && node scripts/stage-release.mjs"
+  },
+  "keywords": [
+    "obsidian",
+    "pdf",
+    "markdown",
+    "tables",
+    "webp",
+    "offline"
+  ],
+  "author": "Andy Herle",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andyherle/obsidian-pdf-to-markdown.git"
+  },
+  "bugs": {
+    "url": "https://github.com/andyherle/obsidian-pdf-to-markdown/issues"
+  },
+  "homepage": "https://github.com/andyherle/obsidian-pdf-to-markdown#readme",
+  "devDependencies": {
+    "@eslint/js": "9.39.4",
+    "@types/node": "22.15.17",
+    "esbuild": "0.25.5",
+    "eslint": "9.39.4",
+    "eslint-plugin-obsidianmd": "0.4.1",
+    "globals": "17.6.0",
+    "jiti": "2.6.1",
+    "obsidian": "1.13.2",
+    "typescript": "5.8.3",
+    "typescript-eslint": "8.59.1"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "npm@10.9.2"
+}

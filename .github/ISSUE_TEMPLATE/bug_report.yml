@@ -1,0 +1,68 @@
+name: Bug report
+description: Report a repeatable conversion or plugin problem.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not upload a private PDF. Use a reduced or generated test file when possible.
+  - type: input
+    id: obsidian
+    attributes:
+      label: Obsidian version
+      placeholder: 1.12.7
+    validations:
+      required: true
+  - type: input
+    id: plugin
+    attributes:
+      label: Plugin version
+      placeholder: 0.2.0
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - macOS
+        - Windows
+        - Linux
+        - iOS
+        - Android
+    validations:
+      required: true
+  - type: dropdown
+    id: pdf-type
+    attributes:
+      label: PDF type
+      options:
+        - Text PDF
+        - Scanned or image-only PDF
+        - PDF with tables
+        - PDF with embedded images
+        - Password-protected PDF
+        - Unknown
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include the selected image, table, and source PDF settings.
+      placeholder: "1. Open...\n2. Select...\n3. Convert..."
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Actual result
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
