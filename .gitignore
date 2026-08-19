@@ -1,0 +1,14 @@
+node_modules/
+.DS_Store
+*.log
+*.zip
+*.tar.gz
+coverage/
+release/
+.test-build/
+.build-local/
+main.js
+main.js.map
+.vscode/
+.idea/
+data.json

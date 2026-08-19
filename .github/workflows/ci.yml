@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Type check
+        run: npm run check
+      - name: Unit tests
+        run: npm test
+      - name: Lint against Obsidian guidelines
+        run: npm run lint
+      - name: Build release
+        run: npm run build
+      - name: Validate release files and runtime boundary
+        run: node scripts/validate-release.mjs
+      - name: Smoke-test plugin bundle
+        run: npm run smoke:bundle
+      - name: Check bundle syntax
+        run: node --check main.js
+      - name: Upload test build
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdf-native-notes-${{ github.sha }}
+          path: |
+            main.js
+            manifest.json
+            styles.css
+          if-no-files-found: error

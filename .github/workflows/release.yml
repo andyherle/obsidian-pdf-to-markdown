@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*.*.*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Confirm tag and manifest version
+        shell: bash
+        run: |
+          VERSION="$(node -p "require('./manifest.json').version")"
+          test "$GITHUB_REF_NAME" = "$VERSION" || {
+            echo "Tag $GITHUB_REF_NAME does not match manifest version $VERSION"
+            exit 1
+          }
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Validate and build
+        run: npm run validate
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "$GITHUB_REF_NAME"
+          main.js manifest.json styles.css
+          --verify-tag
+          --title "$GITHUB_REF_NAME"
+          --generate-notes
