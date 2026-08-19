@@ -1,6 +1,6 @@
-import { activeWindow } from "obsidian";
 import type { CancellationToken, ExtractedAsset, PdfToMarkdownSettings } from "../types";
 import type { PdfJsLibrary, PdfObjectStore, PdfPageProxy } from "./pdfjs";
+import { getActiveWindow } from "./dom";
 import { imageToCanvas } from "./image-decode";
 import { encodeCanvas, hashBytes, type EncodedCanvas } from "./image-encode";
 import { IDENTITY, imageBounds, multiply, transformFromArgs, type Matrix } from "./image-geometry";
@@ -26,6 +26,7 @@ function getPdfObject(
   if (available.length === 0) return Promise.resolve(null);
   const resolved = available.filter((store) => objectStoreHasValue(store, id));
   const candidates = resolved.length > 0 ? resolved : available;
+  const activeWindow = getActiveWindow();
 
   return new Promise((resolve) => {
     let settled = false;
