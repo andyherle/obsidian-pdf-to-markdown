@@ -7,21 +7,38 @@ on:
         description: Release version. Leave blank to use manifest.json.
         required: false
         type: string
+      force:
+        description: Rebuild and replace assets for an existing release.
+        required: false
+        default: false
+        type: boolean
   push:
-    tags:
-      - "*.*.*"
+    branches:
+      - main
+    paths:
+      - manifest.json
+      - package.json
+      - versions.json
+      - styles.css
+      - src/**
+      - tests/**
+      - scripts/**
+      - tsconfig.json
+      - esbuild.config.mjs
+      - eslint.config.mts
+      - .github/workflows/release.yml
 
 permissions:
   contents: write
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release-${{ github.repository }}
   cancel-in-progress: false
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,21 +48,18 @@ jobs:
         with:
           node-version: 20
 
-      - name: Confirm release version
+      - name: Determine release version
         id: release-version
         shell: bash
         env:
           REQUESTED_VERSION: ${{ inputs.version }}
+          FORCE_RELEASE: ${{ inputs.force }}
         run: |
           MANIFEST_VERSION="$(node -p "require('./manifest.json').version")"
+          VERSION="$REQUESTED_VERSION"
 
-          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
-            VERSION="$REQUESTED_VERSION"
-            if [ -z "$VERSION" ]; then
-              VERSION="$MANIFEST_VERSION"
-            fi
-          else
-            VERSION="$GITHUB_REF_NAME"
+          if [ -z "$VERSION" ]; then
+            VERSION="$MANIFEST_VERSION"
           fi
 
           if [ "$VERSION" != "$MANIFEST_VERSION" ]; then
@@ -58,24 +72,40 @@ jobs:
             exit 1
           fi
 
+          git fetch --tags --force
+
+          SHOULD_RELEASE=true
+          if git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
+            if [ "$FORCE_RELEASE" != "true" ]; then
+              echo "Tag $VERSION already exists. Nothing to publish."
+              SHOULD_RELEASE=false
+            fi
+          fi
+
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "should_release=$SHOULD_RELEASE" >> "$GITHUB_OUTPUT"
 
       - name: Install dependencies
+        if: steps.release-version.outputs.should_release == 'true'
         run: npm install --no-audit --no-fund
 
       - name: Validate and build
+        if: steps.release-version.outputs.should_release == 'true'
         run: npm run validate
 
-      - name: Create matching tag for a manual release
-        if: github.event_name == 'workflow_dispatch'
+      - name: Create matching tag
+        if: steps.release-version.outputs.should_release == 'true'
         shell: bash
         env:
           VERSION: ${{ steps.release-version.outputs.version }}
+          FORCE_RELEASE: ${{ inputs.force }}
         run: |
           if git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
             TAG_SHA="$(git rev-list -n 1 "$VERSION")"
-            if [ "$TAG_SHA" != "$GITHUB_SHA" ]; then
-              echo "Tag $VERSION already points to $TAG_SHA instead of $GITHUB_SHA"
+            if [ "$FORCE_RELEASE" = "true" ]; then
+              echo "Reusing existing tag $VERSION at $TAG_SHA"
+            else
+              echo "Tag $VERSION already exists"
               exit 1
             fi
           else
@@ -86,6 +116,7 @@ jobs:
           fi
 
       - name: Create or repair GitHub release
+        if: steps.release-version.outputs.should_release == 'true'
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -99,4 +130,16 @@ jobs:
               --verify-tag \
               --title "$VERSION" \
               --generate-notes
+          fi
+
+      - name: Release summary
+        shell: bash
+        env:
+          VERSION: ${{ steps.release-version.outputs.version }}
+          SHOULD_RELEASE: ${{ steps.release-version.outputs.should_release }}
+        run: |
+          if [ "$SHOULD_RELEASE" = "true" ]; then
+            echo "Published $VERSION with main.js, manifest.json, and styles.css" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Release $VERSION already exists. No files changed." >> "$GITHUB_STEP_SUMMARY"
           fi
