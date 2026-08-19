@@ -1,6 +1,12 @@
 name: Release
 
 on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version. Leave blank to use manifest.json.
+        required: false
+        type: string
   push:
     tags:
       - "*.*.*"
@@ -20,27 +26,77 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Confirm tag and manifest version
+
+      - name: Confirm release version
+        id: release-version
         shell: bash
+        env:
+          REQUESTED_VERSION: ${{ inputs.version }}
         run: |
-          VERSION="$(node -p "require('./manifest.json').version")"
-          test "$GITHUB_REF_NAME" = "$VERSION" || {
-            echo "Tag $GITHUB_REF_NAME does not match manifest version $VERSION"
+          MANIFEST_VERSION="$(node -p "require('./manifest.json').version")"
+
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            VERSION="$REQUESTED_VERSION"
+            if [ -z "$VERSION" ]; then
+              VERSION="$MANIFEST_VERSION"
+            fi
+          else
+            VERSION="$GITHUB_REF_NAME"
+          fi
+
+          if [ "$VERSION" != "$MANIFEST_VERSION" ]; then
+            echo "Release version $VERSION does not match manifest version $MANIFEST_VERSION"
             exit 1
-          }
+          fi
+
+          if ! printf '%s' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "Release version must use x.y.z without a v prefix"
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+
       - name: Validate and build
         run: npm run validate
-      - name: Create GitHub release
+
+      - name: Create matching tag for a manual release
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        env:
+          VERSION: ${{ steps.release-version.outputs.version }}
+        run: |
+          if git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
+            TAG_SHA="$(git rev-list -n 1 "$VERSION")"
+            if [ "$TAG_SHA" != "$GITHUB_SHA" ]; then
+              echo "Tag $VERSION already points to $TAG_SHA instead of $GITHUB_SHA"
+              exit 1
+            fi
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag "$VERSION" "$GITHUB_SHA"
+            git push origin "$VERSION"
+          fi
+
+      - name: Create or repair GitHub release
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-        run: >-
-          gh release create "$GITHUB_REF_NAME"
-          main.js manifest.json styles.css
-          --verify-tag
-          --title "$GITHUB_REF_NAME"
-          --generate-notes
+          VERSION: ${{ steps.release-version.outputs.version }}
+        run: |
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            gh release upload "$VERSION" main.js manifest.json styles.css --clobber
+          else
+            gh release create "$VERSION" \
+              main.js manifest.json styles.css \
+              --verify-tag \
+              --title "$VERSION" \
+              --generate-notes
+          fi
