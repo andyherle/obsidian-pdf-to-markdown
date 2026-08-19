@@ -25,7 +25,7 @@ export function formatDuration(value: number): string {
 }
 
 function sourceActionText(action: SourceAction, destination?: string): string {
-  if (action === "trash") return "Move the PDF to Obsidian trash";
+  if (action === "trash") return "Use Obsidian's Deleted files setting for the PDF";
   if (action === "move") return destination ? `Move the PDF to ${destination}` : "Leave the PDF in place";
   return "Leave the PDF in place";
 }

@@ -9,7 +9,7 @@ npm run build
 node scripts/validate-release.mjs
 ```
 
-The automated suite currently contains 31 tests. It covers rollback order, link rollback, path safety, Markdown table cleanup, PDF page-anchor conversion, image dimension limits, raw pixel classification, text layout, table detection, settings normalization, and SVG table output.
+The automated suite currently contains 33 tests. It covers rollback order, link rollback, path safety, Markdown table cleanup, PDF page-anchor conversion, image dimension limits, raw pixel classification, text layout, table detection, settings normalization, and SVG table output.
 
 ## Manual matrix
 

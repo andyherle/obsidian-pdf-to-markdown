@@ -95,12 +95,11 @@ function wikiTargetFor(
   app: App,
   note: TFile,
   sourceFile: TFile,
-  sourcePdf: TFile,
-  options: ConversionOptions
+  sourcePdf: TFile
 ): string {
   const sameStem = withoutExtension(note.path).toLowerCase() ===
     withoutExtension(sourcePdf.path).toLowerCase();
-  if (options.sourceAction === "keep" && sameStem) return note.path;
+  if (sameStem) return note.path;
   return app.metadataCache.fileToLinktext(note, sourceFile.path, true);
 }
 
@@ -145,7 +144,7 @@ export async function applyLinkPlans(
       let after = "";
       await app.vault.process(plan.file, (content) => {
         before = content;
-        const wikiTarget = wikiTargetFor(app, note, plan.file, sourcePdf, options);
+        const wikiTarget = wikiTargetFor(app, note, plan.file, sourcePdf);
         const markdownTarget = encodeMarkdownLinkPath(relativeVaultPath(plan.file.path, note.path));
         after = applyReferences(
           content,

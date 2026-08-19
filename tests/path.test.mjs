@@ -4,6 +4,7 @@ import { TFile, TFolder } from "../.test-build/node_modules/obsidian/index.js";
 import {
   availableFilePath,
   availableFolderPath,
+  ensureFolder,
   encodeMarkdownLinkPath,
   relativeVaultPath,
   safeFileName,
@@ -79,5 +80,34 @@ test("path collisions are detected without depending on filesystem case rules", 
     }
   };
 
-  assert.equal(availableFilePath(app, "records/invoice.md"), "records/invoice (2).md");
+  assert.equal(availableFilePath(app, "records/invoice.md"), "Records/invoice (2).md");
+});
+
+
+test("new folders use the existing parent folder casing", async () => {
+  const root = new TFolder("");
+  const records = new TFolder("Records");
+  root.children = [records];
+  const existing = new Map([[records.path, records]]);
+  const created = [];
+  const app = {
+    vault: {
+      getRoot() {
+        return root;
+      },
+      getAbstractFileByPath(path) {
+        return existing.get(path) ?? null;
+      },
+      async createFolder(path) {
+        const folder = new TFolder(path);
+        existing.set(path, folder);
+        records.children.push(folder);
+        created.push(path);
+        return folder;
+      }
+    }
+  };
+
+  await ensureFolder(app, "records/New");
+  assert.deepEqual(created, ["Records/New"]);
 });

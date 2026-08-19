@@ -1,7 +1,9 @@
 # Build report
 
-Date: 2026-08-19  
-Release: 0.2.0  
+Date: 2026-08-19
+
+Release: 0.2.0
+
 Plugin ID: `pdf-native-notes`
 
 ## Completed
@@ -12,7 +14,7 @@ Plugin ID: `pdf-native-notes`
 - Added WebP, JPEG, and PNG image compression with dimension and memory limits.
 - Added compressed page snapshots for scanned or image-only pages.
 - Added PDF, rendered Markdown, source Markdown, and output-file previews.
-- Added safe PDF keep, Obsidian Trash, and Vault-folder move actions.
+- Added safe PDF keep, Obsidian Deleted files, and Vault-folder move actions.
 - Added exact link migration with alias, embed, title, and page-anchor preservation.
 - Added rollback for partial file and link-update failures.
 - Added cross-platform filename and path checks.
@@ -20,12 +22,12 @@ Plugin ID: `pdf-native-notes`
 
 ## Local validation
 
-- Unit tests: 31 passed, 0 failed.
+- Unit tests: 33 passed, 0 failed.
 - Strict TypeScript check: passed against the local Obsidian API test declarations.
 - Local production bundle: passed.
 - Bundle syntax and export smoke test: passed.
 - Release consistency and runtime-boundary validation: passed.
-- Runtime scan found no network calls, Node.js runtime imports, direct Vault adapter access, or permanent Vault deletion.
+- Runtime scan found no network calls, Node.js runtime imports, direct Vault adapter access, or direct permanent-delete API calls.
 
 ## Required live validation
 

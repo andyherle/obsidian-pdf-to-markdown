@@ -9,6 +9,7 @@ export default defineConfig(
     ".build-local",
     "release",
     "main.js",
+    "package.json",
     "package-lock.json",
     "tsconfig.json",
     "versions.json",

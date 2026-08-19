@@ -62,3 +62,39 @@ test("partial link updates are restored when a later note fails", async () => {
   assert.equal(second.content, original);
   assert.equal(events.at(-1), `Notes/A.md:${original}`);
 });
+
+
+test("same-stem note links use an explicit Markdown path", async () => {
+  const original = "[[Invoice.pdf]]";
+  const sourceFile = file("Notes/A.md", original);
+  const note = file("Docs/Invoice.md");
+  const source = file("Docs/Invoice.pdf");
+  const app = {
+    metadataCache: {
+      fileToLinktext() {
+        return "Invoice";
+      }
+    },
+    vault: {
+      async process(target, change) {
+        target.content = change(target.content);
+        return target.content;
+      }
+    }
+  };
+  const plan = {
+    file: sourceFile,
+    references: [reference(original)],
+    originalMtime: sourceFile.stat.mtime,
+    originalSize: sourceFile.stat.size
+  };
+
+  await applyLinkPlans(
+    app,
+    [plan],
+    note,
+    source,
+    { ...DEFAULT_SETTINGS, sourceAction: "trash", title: "Invoice" }
+  );
+  assert.equal(sourceFile.content, "[[Docs/Invoice.md]]");
+});

@@ -142,11 +142,33 @@ function findLoadedPath(app: App, path: string): TAbstractFile | null {
   return current;
 }
 
+function canonicalFolderPath(app: App, path: string): string {
+  const normalized = path ? normalizePath(path) : "";
+  if (!normalized) return "";
+  const getRoot = app.vault.getRoot?.bind(app.vault);
+  if (typeof getRoot !== "function") return normalized;
+
+  let current: TFolder = getRoot();
+  const parts = normalized.split("/");
+  for (let index = 0; index < parts.length; index += 1) {
+    const folded = parts[index].normalize("NFC").toLowerCase();
+    const child = current.children.find(
+      (item) => item.name.normalize("NFC").toLowerCase() === folded
+    );
+    if (!(child instanceof TFolder)) {
+      return joinPath(current.path, ...parts.slice(index));
+    }
+    current = child;
+  }
+  return current.path;
+}
+
 export function availableFilePath(app: App, desiredPath: string): string {
-  const desired = normalizePath(desiredPath);
+  const normalized = normalizePath(desiredPath);
+  const folder = canonicalFolderPath(app, dirname(normalized));
+  const name = basename(normalized);
+  const desired = joinPath(folder, name);
   if (!findLoadedPath(app, desired)) return desired;
-  const folder = dirname(desired);
-  const name = basename(desired);
   const dot = name.lastIndexOf(".");
   const stem = dot > 0 ? name.slice(0, dot) : name;
   const suffix = dot > 0 ? name.slice(dot) : "";
@@ -159,10 +181,11 @@ export function availableFilePath(app: App, desiredPath: string): string {
 }
 
 export function availableFolderPath(app: App, desiredPath: string): string {
-  const desired = normalizePath(desiredPath);
+  const normalized = normalizePath(desiredPath);
+  const folder = canonicalFolderPath(app, dirname(normalized));
+  const name = basename(normalized);
+  const desired = joinPath(folder, name);
   if (!findLoadedPath(app, desired)) return desired;
-  const folder = dirname(desired);
-  const name = basename(desired);
   for (let index = 2; index < 10000; index += 1) {
     const candidateName = collisionName(name, index, "Converted PDF", false);
     const candidate = joinPath(folder, candidateName);
@@ -183,12 +206,15 @@ export async function ensureFolder(app: App, folderPath: string): Promise<void> 
   const parts = normalized.split("/");
   let current = "";
   for (const part of parts) {
-    current = current ? `${current}/${part}` : part;
-    const item = findLoadedPath(app, current);
+    const requested = joinPath(current, part);
+    const item = findLoadedPath(app, requested);
     if (!item) {
-      await app.vault.createFolder(current);
+      await app.vault.createFolder(requested);
+      current = requested;
     } else if (!(item instanceof TFolder)) {
-      throw new Error(`A file blocks the folder path ${current}.`);
+      throw new Error(`A file blocks the folder path ${requested}.`);
+    } else {
+      current = item.path;
     }
   }
 }
