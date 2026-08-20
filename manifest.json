@@ -1,7 +1,7 @@
 {
   "id": "pdf-native-notes",
   "name": "PDF to Markdown Native",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "minAppVersion": "1.6.6",
   "description": "Convert Vault PDFs into clean Markdown with local text and table extraction, compressed images, optional SVG tables, and safe PDF handling.",
   "author": "Andy Herle",

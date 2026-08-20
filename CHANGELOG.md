@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.3
+
+- Added scanner-visible, described compatibility scopes for hosted review false positives caused by the Obsidian API declaration surface.
+- Kept strict runtime boundary validation, local TypeScript checks, and zero-warning CI.
+- No runtime behavior changed; desktop and mobile support remain unchanged.
+
 ## 0.2.2
 
 - Fixed cascading Community Plugin review warnings caused by incomplete Obsidian 1.13 `HistoryHandler` declarations.

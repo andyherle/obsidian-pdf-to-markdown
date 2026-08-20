@@ -1,6 +1,6 @@
 {
   "name": "obsidian-pdf-to-markdown",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "PDF to Markdown Native converts Vault PDFs to local Markdown with compressed images and compact SVG table output.",
   "main": "main.js",
   "type": "module",
