@@ -6,12 +6,12 @@
   "type": "module",
   "scripts": {
     "dev": "node esbuild.config.mjs",
-    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+    "build": "tsc --noEmit && node esbuild.config.mjs production",
     "build:local": "node scripts/build-local.mjs",
     "build:tests": "node scripts/build-tests.mjs",
     "test": "npm run build:tests && node --test tests/*.test.mjs",
     "lint": "eslint . --max-warnings 0",
-    "check": "tsc -noEmit -skipLibCheck",
+    "check": "tsc --noEmit",
     "version": "node scripts/version-bump.mjs && git add manifest.json versions.json",
     "validate": "npm run check && npm test && npm run lint && npm run build && node scripts/validate-release.mjs && npm run smoke:bundle",
     "smoke:bundle": "node scripts/smoke-bundle.mjs",
@@ -38,6 +38,7 @@
   "devDependencies": {
     "@eslint/js": "9.39.4",
     "@types/node": "22.15.17",
+    "@typescript-eslint/parser": "8.67.0",
     "esbuild": "0.25.5",
     "eslint": "9.39.4",
     "eslint-plugin-obsidianmd": "0.4.1",
