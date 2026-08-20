@@ -10,7 +10,7 @@
     "build:local": "node scripts/build-local.mjs",
     "build:tests": "node scripts/build-tests.mjs",
     "test": "npm run build:tests && node --test tests/*.test.mjs",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "check": "tsc -noEmit -skipLibCheck",
     "version": "node scripts/version-bump.mjs && git add manifest.json versions.json",
     "validate": "npm run check && npm test && npm run lint && npm run build && node scripts/validate-release.mjs && npm run smoke:bundle",
