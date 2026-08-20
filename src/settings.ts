@@ -37,7 +37,6 @@ export class PdfToMarkdownSettingTab extends PluginSettingTab {
       [key]: value
     });
     await this.plugin.saveSettings();
-    this.refreshDomState();
   }
 
   override getSettingDefinitions(): SettingDefinitionItem[] {
