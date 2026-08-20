@@ -44,8 +44,8 @@
     "globals": "17.6.0",
     "jiti": "2.6.1",
     "obsidian": "1.13.1",
-    "typescript": "5.8.3",
-    "typescript-eslint": "8.59.1"
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.67.0"
   },
   "engines": {
     "node": ">=20"
