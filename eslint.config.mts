@@ -15,6 +15,7 @@ export default defineConfig(
     "tsconfig.json",
     "versions.json",
     "esbuild.config.mjs",
+    "eslint.config.mts",
     "scripts/**",
     "tests/**"
   ]),
