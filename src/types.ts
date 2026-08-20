@@ -24,6 +24,31 @@ export interface PdfToMarkdownSettings {
   openAfterConversion: boolean;
 }
 
+export const PDF_TO_MARKDOWN_SETTING_KEYS = [
+  "sourceAction",
+  "moveFolder",
+  "assetLocation",
+  "extractImages",
+  "imageFormat",
+  "imageQuality",
+  "maxImageDimension",
+  "minImageDimension",
+  "renderImageOnlyPages",
+  "detectTables",
+  "tableOutput",
+  "tableMinConfidence",
+  "includePageHeadings",
+  "removeRepeatedMargins",
+  "updateLinks",
+  "openAfterConversion"
+] as const satisfies readonly (keyof PdfToMarkdownSettings)[];
+
+export type PdfToMarkdownSettingKey = (typeof PDF_TO_MARKDOWN_SETTING_KEYS)[number];
+
+export function isPdfToMarkdownSettingKey(value: string): value is PdfToMarkdownSettingKey {
+  return PDF_TO_MARKDOWN_SETTING_KEYS.some((key) => key === value);
+}
+
 export const DEFAULT_SETTINGS: PdfToMarkdownSettings = {
   sourceAction: "keep",
   moveFolder: "PDF Archive",
@@ -43,6 +68,9 @@ export const DEFAULT_SETTINGS: PdfToMarkdownSettings = {
   openAfterConversion: true
 };
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
 
 function clamp(value: unknown, minimum: number, maximum: number, fallback: number): number {
   return typeof value === "number" && Number.isFinite(value)
@@ -51,11 +79,12 @@ function clamp(value: unknown, minimum: number, maximum: number, fallback: numbe
 }
 
 function oneOf<T extends string>(value: unknown, values: readonly T[], fallback: T): T {
-  return typeof value === "string" && values.includes(value as T) ? value as T : fallback;
+  if (typeof value !== "string") return fallback;
+  return values.find((candidate) => candidate === value) ?? fallback;
 }
 
-export function normalizeSettings(value: Partial<PdfToMarkdownSettings> | null | undefined): PdfToMarkdownSettings {
-  const saved = value ?? {};
+export function normalizeSettings(value: unknown): PdfToMarkdownSettings {
+  const saved = isRecord(value) ? value : {};
   return {
     sourceAction: oneOf(saved.sourceAction, ["keep", "trash", "move"] as const, DEFAULT_SETTINGS.sourceAction),
     moveFolder: typeof saved.moveFolder === "string" ? saved.moveFolder : DEFAULT_SETTINGS.moveFolder,
