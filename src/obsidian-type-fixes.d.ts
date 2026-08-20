@@ -1,5 +1,7 @@
 import "obsidian";
 
+declare const pdfNativeNotesSuggestionType: unique symbol;
+
 /**
  * Obsidian 1.13 declares these classes as HistoryHandler implementations but
  * omits the required method from their public class declarations. The method
@@ -18,6 +20,6 @@ declare module "obsidian" {
 
   interface PopoverSuggest<T> {
     onHistoryBack(): void;
-    selectSuggestion(value: T, evt: MouseEvent | KeyboardEvent): void;
+    readonly [pdfNativeNotesSuggestionType]?: T;
   }
 }
