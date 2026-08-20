@@ -18,5 +18,6 @@ declare module "obsidian" {
 
   interface PopoverSuggest<T> {
     onHistoryBack(): void;
+    selectSuggestion(value: T, evt: MouseEvent | KeyboardEvent): void;
   }
 }
