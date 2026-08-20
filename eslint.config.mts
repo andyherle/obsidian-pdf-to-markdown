@@ -1,6 +1,6 @@
+import tsparser from "@typescript-eslint/parser";
 import obsidianmd from "eslint-plugin-obsidianmd";
 import globals from "globals";
-import tseslint from "typescript-eslint";
 import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig(
@@ -23,7 +23,7 @@ export default defineConfig(
   {
     files: ["src/**/*.ts"],
     languageOptions: {
-      parser: tseslint.parser,
+      parser: tsparser,
       globals: {
         ...globals.browser
       },
