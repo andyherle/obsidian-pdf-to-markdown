@@ -33,6 +33,12 @@ export default defineConfig(
       }
     },
     rules: {
+      "@typescript-eslint/no-redundant-type-constituents": "error",
+      "@typescript-eslint/no-unsafe-argument": "error",
+      "@typescript-eslint/no-unsafe-assignment": "error",
+      "@typescript-eslint/no-unsafe-call": "error",
+      "@typescript-eslint/no-unsafe-member-access": "error",
+      "@typescript-eslint/no-unsafe-return": "error",
       "obsidianmd/ui/sentence-case": [
         "warn",
         {
