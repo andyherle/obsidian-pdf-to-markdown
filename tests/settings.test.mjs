@@ -21,6 +21,8 @@ test("saved settings are validated and clamped", () => {
   assert.equal(settings.extractImages, false);
 });
 
-test("missing settings use stable defaults", () => {
+test("missing and invalid settings use stable defaults", () => {
   assert.deepEqual(normalizeSettings(null), DEFAULT_SETTINGS);
+  assert.deepEqual(normalizeSettings("invalid"), DEFAULT_SETTINGS);
+  assert.deepEqual(normalizeSettings([]), DEFAULT_SETTINGS);
 });

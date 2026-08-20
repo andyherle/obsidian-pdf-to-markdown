@@ -40,7 +40,7 @@ export default class PdfToMarkdownPlugin extends Plugin {
   }
 
   async loadSettings(): Promise<void> {
-    const saved = await this.loadData() as Partial<PdfToMarkdownSettings> | null;
+    const saved: unknown = await this.loadData();
     this.pluginSettings = normalizeSettings(saved);
   }
 
