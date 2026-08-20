@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1
+
+- Added searchable declarative settings for Obsidian 1.13 and kept the existing settings screen for older versions.
+- Hardened saved-settings and PDF-engine boundaries so unknown data is validated before use.
+- Fixed Obsidian UI helper and browser timer guideline warnings.
+- Fixed ESLint type-aware project configuration so Obsidian API types resolve correctly.
+- Added signed GitHub build provenance attestations for release assets.
+
 ## 0.2.0
 
 - Added local PDF text extraction through Obsidian's PDF engine.
