@@ -86,7 +86,7 @@ export async function yieldToInterface(): Promise<void> {
     if (typeof timerWindow.requestAnimationFrame === "function") {
       timerWindow.requestAnimationFrame(() => resolve());
     } else {
-      timerWindow.setTimeout(resolve, 0);
+      window.setTimeout(resolve, 0);
     }
   });
 }
@@ -96,11 +96,23 @@ function destroyLoadingTask(task: PdfLoadingTask): void {
   if (result) void result.catch(() => undefined);
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isPdfJsLibrary(value: unknown): value is PdfJsLibrary {
+  return isRecord(value) && typeof value.getDocument === "function" && isRecord(value.OPS);
+}
+
 export async function openPdfDocument(
   bytes: ArrayBuffer,
   passwordProvider?: PasswordProvider
 ): Promise<OpenPdfResult> {
-  const pdfjs = (await loadPdfJs()) as PdfJsLibrary;
+  const loadedPdfJs: unknown = await loadPdfJs();
+  if (!isPdfJsLibrary(loadedPdfJs)) {
+    throw new Error("Obsidian's PDF engine is unavailable.");
+  }
+  const pdfjs = loadedPdfJs;
   const loadingTask = pdfjs.getDocument({
     data: new Uint8Array(bytes),
     isEvalSupported: false,
