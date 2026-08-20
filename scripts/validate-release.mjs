@@ -22,7 +22,9 @@ for (const [label, pattern] of [
   ["Node.js runtime import", /(?:from\s+["'](?:node:|fs["']|path["']|child_process["']|electron["'])|require\(["'](?:node:|fs["']|path["']|child_process["']|electron["']))/],
   ["direct Vault adapter access", /\.vault\.adapter\b/],
   ["permanent Vault deletion", /\.vault\.delete\s*\(/],
-  ["global browser context", /\b(?:globalThis|window)\s*(?:\.|\[)/],
+  // Obsidian's lint rules require the standard window timer functions. Other
+  // global browser access is rejected because it can target the wrong window.
+  ["global browser context", /\b(?:globalThis\s*(?:\.|\[)|window\s*(?:\.(?!(?:setTimeout|clearTimeout)\b)|\[))/],
   ["full-vault file iteration", /\.vault\.(?:getAllLoadedFiles|getFiles)\s*\(/]
 ]) {
   if (pattern.test(runtimeSource)) throw new Error(`Runtime source contains ${label}.`);
