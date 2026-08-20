@@ -1,6 +1,6 @@
+import tsparser from "@typescript-eslint/parser";
 import obsidianmd from "eslint-plugin-obsidianmd";
 import globals from "globals";
-import tseslint from "typescript-eslint";
 import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig(
@@ -23,7 +23,7 @@ export default defineConfig(
   {
     files: ["src/**/*.ts"],
     languageOptions: {
-      parser: tseslint.parser,
+      parser: tsparser,
       globals: {
         ...globals.browser
       },
@@ -33,6 +33,12 @@ export default defineConfig(
       }
     },
     rules: {
+      "@typescript-eslint/no-redundant-type-constituents": "error",
+      "@typescript-eslint/no-unsafe-argument": "error",
+      "@typescript-eslint/no-unsafe-assignment": "error",
+      "@typescript-eslint/no-unsafe-call": "error",
+      "@typescript-eslint/no-unsafe-member-access": "error",
+      "@typescript-eslint/no-unsafe-return": "error",
       "obsidianmd/ui/sentence-case": [
         "warn",
         {

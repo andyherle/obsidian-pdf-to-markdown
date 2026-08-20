@@ -70,6 +70,7 @@ for (const compiler of candidates) {
   if (compiler.includes("node_modules") && !existsSync(compiler)) continue;
   try {
     execFileSync(compiler, [
+      "--ignoreConfig",
       "--noCheck",
       "--target", "ES2022",
       "--module", "ES2022",

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.2
+
+- Fixed cascading Community Plugin review warnings caused by incomplete Obsidian 1.13 `HistoryHandler` declarations.
+- Added full dependency declaration checking so unresolved API types cannot be hidden by `skipLibCheck`.
+- Added strict unsafe-value lint rules and made all lint warnings fail CI.
+- Updated the TypeScript and ESLint analysis toolchain used for release validation.
+- Kept the runtime fully local and compatible with Obsidian desktop and mobile.
+
 ## 0.2.1
 
 - Added searchable declarative settings for Obsidian 1.13 and kept the existing settings screen for older versions.
