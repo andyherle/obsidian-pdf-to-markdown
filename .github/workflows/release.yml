@@ -30,6 +30,9 @@ on:
 
 permissions:
   contents: write
+  id-token: write
+  attestations: write
+  artifact-metadata: write
 
 concurrency:
   group: release-${{ github.repository }}
@@ -113,6 +116,15 @@ jobs:
         if: steps.release-version.outputs.should_release == 'true'
         run: npm run validate
 
+      - name: Attest release assets
+        if: steps.release-version.outputs.should_release == 'true'
+        uses: actions/attest@v4
+        with:
+          subject-path: |
+            main.js
+            manifest.json
+            styles.css
+
       - name: Create matching tag
         if: steps.release-version.outputs.should_release == 'true'
         shell: bash
@@ -155,7 +167,7 @@ jobs:
           SHOULD_RELEASE: ${{ steps.release-version.outputs.should_release }}
         run: |
           if [ "$SHOULD_RELEASE" = "true" ]; then
-            echo "Published $VERSION with main.js, manifest.json, and styles.css" >> "$GITHUB_STEP_SUMMARY"
+            echo "Published $VERSION with attested main.js, manifest.json, and styles.css" >> "$GITHUB_STEP_SUMMARY"
           else
             echo "Release $VERSION already exists. No files changed." >> "$GITHUB_STEP_SUMMARY"
           fi
