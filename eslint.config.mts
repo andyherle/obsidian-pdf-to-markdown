@@ -37,7 +37,7 @@ export default defineConfig(
         "warn",
         {
           mode: "loose",
-          brands: ["Obsidian", "Markdown", "WebP"],
+          brands: ["Obsidian", "Markdown", "WebP", "Python", "Deleted files"],
           acronyms: ["PDF", "SVG", "PNG", "JPEG", "HTML", "OCR", "URL"],
           allowAutoFix: false,
           enforceCamelCaseLower: false
