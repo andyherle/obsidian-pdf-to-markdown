@@ -46,7 +46,7 @@
     "jiti": "2.6.1",
     "obsidian": "1.13.1",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.67.0"
+    "typescript-eslint": "8.68.0"
   },
   "engines": {
     "node": ">=20"
