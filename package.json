@@ -37,7 +37,7 @@
   "homepage": "https://github.com/andyherle/obsidian-pdf-to-markdown#readme",
   "devDependencies": {
     "@eslint/js": "9.39.4",
-    "@types/node": "22.15.17",
+    "@types/node": "26.4.0",
     "@typescript-eslint/parser": "8.67.0",
     "esbuild": "0.25.5",
     "eslint": "9.39.4",
